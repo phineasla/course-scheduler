@@ -10,7 +10,13 @@ function App() {
           <div className="flex-row font-semibold text-xl">
             <div>Course Scheduler</div>
           </div>
-          <FontAwesomeIcon icon={faGithub} size="2x" />
+          <a href="https://github.com/phineasla/course-scheduler">
+            <FontAwesomeIcon
+              icon={faGithub}
+              size="2x"
+              href="https://github.com/phineasla/course-scheduler"
+            />
+          </a>
         </nav>
       </header>
       <body>
