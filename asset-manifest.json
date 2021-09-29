@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/course-scheduler/static/css/main.adfc6367.chunk.css",
-    "main.js": "/course-scheduler/static/js/main.f8bc351c.chunk.js",
-    "main.js.map": "/course-scheduler/static/js/main.f8bc351c.chunk.js.map",
+    "main.css": "/course-scheduler/static/css/main.299dd52e.chunk.css",
+    "main.js": "/course-scheduler/static/js/main.9f86eb44.chunk.js",
+    "main.js.map": "/course-scheduler/static/js/main.9f86eb44.chunk.js.map",
     "runtime-main.js": "/course-scheduler/static/js/runtime-main.f43f96a0.js",
     "runtime-main.js.map": "/course-scheduler/static/js/runtime-main.f43f96a0.js.map",
     "static/js/2.c2ccff8e.chunk.js": "/course-scheduler/static/js/2.c2ccff8e.chunk.js",
@@ -10,13 +10,13 @@
     "static/js/3.0622add1.chunk.js": "/course-scheduler/static/js/3.0622add1.chunk.js",
     "static/js/3.0622add1.chunk.js.map": "/course-scheduler/static/js/3.0622add1.chunk.js.map",
     "index.html": "/course-scheduler/index.html",
-    "static/css/main.adfc6367.chunk.css.map": "/course-scheduler/static/css/main.adfc6367.chunk.css.map",
+    "static/css/main.299dd52e.chunk.css.map": "/course-scheduler/static/css/main.299dd52e.chunk.css.map",
     "static/js/2.c2ccff8e.chunk.js.LICENSE.txt": "/course-scheduler/static/js/2.c2ccff8e.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.f43f96a0.js",
     "static/js/2.c2ccff8e.chunk.js",
-    "static/css/main.adfc6367.chunk.css",
-    "static/js/main.f8bc351c.chunk.js"
+    "static/css/main.299dd52e.chunk.css",
+    "static/js/main.9f86eb44.chunk.js"
   ]
 }
