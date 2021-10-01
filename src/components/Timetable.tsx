@@ -6,23 +6,42 @@
 //   { field: "lab", headerName: "Lab", width: 150 },
 // ];
 
-const colHeader = [
-  "Sunday",
+
+
+const dayOfWeekArray = [
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
   "Saturday",
+  "Sunday",
 ];
 
 const timeColWidth = 32;
+const dayHeaderHeight = 10;
 
-export const Timetable = () => {
+const DayHeader = ({ dayOfWeek }: { dayOfWeek: string[] }) => {
   return (
-    <div className="flex flex-col mx-2 md:mx-6">
-      <div className="flex-grow overflow-auto">
-        <table className="table-fixed relative w-full border">
+    <div
+      className={`grid grid-cols-${dayOfWeekArray.length} w-full font-medium`}
+    >
+      {dayOfWeek.map((value, index, array) => (
+        <div className="flex border-l justify-center items-center">{value}</div>
+      ))}
+    </div>
+  );
+};
+
+export const Timetable = ({timeColMinWidth = 32, tableColMinWidth = 40}) => {
+  return (
+    <div className="timetable flex flex-col mx-2 md:mx-6 overflow-auto border">
+      <div className={`timetable__header flex h-${dayHeaderHeight} border-b`}>
+        {/* Empty div for time column */}
+        <div className={`w-${timeColWidth}`}></div>
+        <DayHeader dayOfWeek={dayOfWeekArray} />
+
+        {/* <table className="table-fixed relative w-full border">
           <tr>
             <th className="sticky top-0 px-6 py-3 w-32 border border-gray" />
             {colHeader.map((value, index, array) => (
@@ -31,13 +50,9 @@ export const Timetable = () => {
               </th>
             ))}
           </tr>
-        </table>
+        </table> */}
       </div>
-      {/* <div className="flex overflow-auto justify-center">
-        {colHeader.map((value, index, array) => (
-          <div className="border border-gray w-32">{value}</div>
-        ))}
-      </div> */}
+      <div className="timetable__body"></div>
     </div>
   );
 };

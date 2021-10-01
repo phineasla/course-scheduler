@@ -6,7 +6,7 @@ import { Timetable } from "./components/Timetable";
 function App() {
   return (
     <div className="App">
-      <header className="App-header border mb-4">
+      <header className="App-header mb-4">
         <nav className="flex items-center justify-between flex-wrap p-2">
           <div className="flex items-center flex-shrink-0 mr-6">
             <svg
