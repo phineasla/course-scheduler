@@ -24,7 +24,7 @@ const dayHeaderHeight = 10;
 const DayHeader = ({ dayOfWeek }: { dayOfWeek: string[] }) => {
   return (
     <div
-      className={`grid grid-cols-${dayOfWeekArray.length} w-full font-medium`}
+      className={`grid grid-cols-7 w-full font-medium`}
     >
       {dayOfWeek.map((value, index, array) => (
         <div className="flex border-l justify-center items-center">{value}</div>
@@ -36,7 +36,7 @@ const DayHeader = ({ dayOfWeek }: { dayOfWeek: string[] }) => {
 export const Timetable = ({timeColMinWidth = 32, tableColMinWidth = 40}) => {
   return (
     <div className="timetable flex flex-col mx-2 md:mx-6 overflow-auto border">
-      <div className={`timetable__header flex h-${dayHeaderHeight} border-b`}>
+      <div className={`timetable__header flex h-10 border-b`}>
         {/* Empty div for time column */}
         <div className={`w-${timeColWidth}`}></div>
         <DayHeader dayOfWeek={dayOfWeekArray} />
