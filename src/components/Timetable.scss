@@ -1,0 +1,23 @@
+@import "../utils/mixin.scss";
+
+$min-cell-width: 6rem;
+
+.TimetableWrapper {
+  display: grid;
+  grid-template-columns: $min-cell-width 1fr;
+  border: solid gray;
+  overflow: auto;
+
+  @include screen-size(md) {
+    margin: 1rem;
+    border-radius: 8px;
+  }
+}
+
+.DayWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-left: solid gray;
+  min-width: $min-cell-width;
+}

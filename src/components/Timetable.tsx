@@ -1,14 +1,8 @@
-// const columns: GridColDef[] = [
-//   { field: "id", headerName: "Course ID", width: 100 },
-//   { field: "name", headerName: "Course Name", width: 200 },
-//   { field: "credit", headerName: "Credit", width: 50 },
-//   { field: "lecture", headerName: "Lecture", width: 150 },
-//   { field: "lab", headerName: "Lab", width: 150 },
-// ];
+import "./Timetable.scss";
+import styled from "styled-components";
+import dayjs from "dayjs";
 
-
-
-const dayOfWeekArray = [
+const defaultDayOfWeek = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -18,41 +12,33 @@ const dayOfWeekArray = [
   "Sunday",
 ];
 
-const timeColWidth = 32;
-const dayHeaderHeight = 10;
-
 const DayHeader = ({ dayOfWeek }: { dayOfWeek: string[] }) => {
+  const DayHeaderWrapper = styled.div`
+    grid-column-start: 2;
+    display: grid;
+    grid-template-columns: repeat(${dayOfWeek.length}, 1fr);
+    height: 2rem;
+  `;
+
   return (
-    <div
-      className={`grid grid-cols-7 w-full font-medium`}
-    >
+    <DayHeaderWrapper>
       {dayOfWeek.map((value, index, array) => (
-        <div className="flex border-l justify-center items-center">{value}</div>
+        <span className="DayWrapper">{value}</span>
       ))}
-    </div>
+    </DayHeaderWrapper>
   );
 };
 
-export const Timetable = ({timeColMinWidth = 32, tableColMinWidth = 40}) => {
-  return (
-    <div className="timetable flex flex-col mx-2 md:mx-6 overflow-auto border">
-      <div className={`timetable__header flex h-10 border-b`}>
-        {/* Empty div for time column */}
-        <div className={`w-${timeColWidth}`}></div>
-        <DayHeader dayOfWeek={dayOfWeekArray} />
+const Timeline = ({
+  startHour = dayjs().hour(7),
+  endHour = dayjs().hour(17),
+  precision = 15,
+}) => {};
 
-        {/* <table className="table-fixed relative w-full border">
-          <tr>
-            <th className="sticky top-0 px-6 py-3 w-32 border border-gray" />
-            {colHeader.map((value, index, array) => (
-              <th className="sticky top-0 px-6 py-3 w-32 border border-gray">
-                {value}
-              </th>
-            ))}
-          </tr>
-        </table> */}
-      </div>
-      <div className="timetable__body"></div>
+export const Timetable = ({ dayOfWeek = defaultDayOfWeek }) => {
+  return (
+    <div className="TimetableWrapper">
+      <DayHeader dayOfWeek={dayOfWeek} />
     </div>
   );
 };
