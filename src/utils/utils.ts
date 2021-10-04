@@ -6,11 +6,12 @@ export const timeRange = (
   step: number,
   unit: string
 ) => {
-//   if (end.isBefore(start)) throw "Wrong time order";
-  const current = start;
+  if (end.isBefore(start)) throw "Wrong time order";
   const range = [start];
+  let current = start;
   while (current.isBefore(end)) {
-    range.push(current.add(step, unit));
+    current = current.add(step, unit);
+    range.push(current);
   }
   return range;
 };

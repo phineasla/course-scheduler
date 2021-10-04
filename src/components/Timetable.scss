@@ -13,13 +13,13 @@
 }
 
 .timeline {
-  top: -0.75rem;
-  position: relative;
   // Hide timeline on small screen
   @include smaller-than(md) {
     display: none;
   }
-
+  top: -0.75rem;
+  position: relative;
+  //.Cell
   div {
     display: flex;
     justify-content: center;
@@ -51,46 +51,21 @@
 
   &--grid {
     display: flex;
-
+    // .Col
     > div {
       flex: 1;
       border-left: $border-style;
       &:first-of-type {
         border-left: 0;
       }
+      // .Cell
+      > div {
+        box-sizing: border-box;
+        border-bottom: $border-style;
+        &:last-of-type {
+          border-bottom: 0;
+        }
+      }
     }
   }
 }
-
-// .DayHeader {
-//   @include larger-than(md) {
-//     grid-column: 2;
-//   }
-//   display: grid;
-//   position: sticky;
-//   top: 0;
-//   height: $min-header-height;
-// }
-
-// .DayCell {
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   min-width: $min-cell-width;
-//   border-bottom: $border-style;
-//   // Avoid double line on the first column
-//   &:not(:first-of-type) {
-//     border-left: $border-style;
-//   }
-// }
-
-// .DayGrid {
-//   display: grid;
-//   border-top: none;
-
-//   &--Col {
-//     &:not(:first-of-type) {
-//       border-left: $border-style;
-//     }
-//   }
-// }

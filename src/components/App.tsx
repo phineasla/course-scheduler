@@ -5,7 +5,7 @@ import { Timetable } from "./Timetable";
 
 function App() {
   return (
-    <div className="app">
+    <>
       <header>
         <nav>
           <div className="title">
@@ -28,10 +28,8 @@ function App() {
           </a>
         </nav>
       </header>
-      <body>
-        <Timetable />
-      </body>
-    </div>
+      <Timetable />
+    </>
   );
 }
 

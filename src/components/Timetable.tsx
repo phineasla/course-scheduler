@@ -32,18 +32,22 @@ const defaultDayOfWeek = [
 //   endTime,
 //   step,
 //   stepUnit,
+//   cellHeight,
 // }: {
 //   startTime: Dayjs;
 //   endTime: Dayjs;
 //   step: number;
 //   stepUnit: string;
+//   cellHeight: string;
 // }) => {
+//   const range = timeRange(startTime, endTime, step, stepUnit);
 //   return (
 //     <div className="timeline">
-//       <div>{startTime.format("HH:mm")}</div>
-//       <div>08:00</div>
-//       <div>09:00</div>
-//       <div>10:00</div>
+//       {range.map((value, i) => (
+//         <div key={i} style={{ height: cellHeight }}>
+//           {value.format("HH:mm")}
+//         </div>
+//       ))}
 //     </div>
 //   );
 // };
@@ -67,31 +71,33 @@ export const Timetable = ({
   dayOfWeek = defaultDayOfWeek,
   startTime = dayjs().hour(7).minute(0),
   endTime = dayjs().hour(17).minute(0),
-  step = 60,
-  stepUnit = "minute",
+  step = 1,
+  stepUnit = "hour",
   cellHeight = "3rem",
 }) => {
-  const Cell = styled.div`
-    height: ${cellHeight};
-  `;
-
   const timelineRange = timeRange(startTime, endTime, step, stepUnit);
 
   return (
     <div className="timetable">
       <div className="day--header">
-        {dayOfWeek.map((value) => (
-          <div>{value}</div>
+        {dayOfWeek.map((value, i) => (
+          <div key={i}>{value}</div>
         ))}
       </div>
       <div className="timeline">
-        {timelineRange.map((value) => {
-          <Cell>{value.format("HH:mm")}</Cell>;
-        })}
+        {timelineRange.map((value, i) => (
+          <div key={i} style={{ height: cellHeight }}>
+            {value.format("HH:mm")}
+          </div>
+        ))}
       </div>
       <div className="day--grid">
-        {dayOfWeek.map(() => (
-          <div></div>
+        {dayOfWeek.map((value, i) => (
+          <div key={i}>
+            {timelineRange.map((value, j) => (
+              <div key={j} style={{ height: cellHeight }} />
+            ))}
+          </div>
         ))}
       </div>
     </div>
