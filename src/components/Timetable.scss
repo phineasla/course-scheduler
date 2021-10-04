@@ -1,23 +1,96 @@
 @import "../utils/mixin.scss";
+@import "../utils/variable.scss";
 
-$min-cell-width: 6rem;
-
-.TimetableWrapper {
+.timetable {
   display: grid;
-  grid-template-columns: $min-cell-width 1fr;
-  border: solid gray;
   overflow: auto;
-
-  @include screen-size(md) {
+  grid-template-columns: 1fr;
+  // Add margin and timeline on medium screen and up
+  @include larger-than(md) {
     margin: 1rem;
-    border-radius: 8px;
+    grid-template-columns: $min-timeline-width 1fr;
   }
 }
 
-.DayWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-left: solid gray;
-  min-width: $min-cell-width;
+.timeline {
+  top: -0.75rem;
+  position: relative;
+  // Hide timeline on small screen
+  @include smaller-than(md) {
+    display: none;
+  }
+
+  div {
+    display: flex;
+    justify-content: center;
+  }
 }
+
+.day {
+  &--header {
+    @include larger-than(md) {
+      grid-column: 2;
+    }
+    display: flex;
+    position: sticky;
+    top: 0;
+    height: $min-header-height;
+
+    > div {
+      @include flex-center;
+      flex: 1;
+      min-width: $min-cell-width;
+      border: $border-style;
+      border-right: 0;
+      border-top: 0;
+      &:first-of-type {
+        border-left: 0;
+      }
+    }
+  }
+
+  &--grid {
+    display: flex;
+
+    > div {
+      flex: 1;
+      border-left: $border-style;
+      &:first-of-type {
+        border-left: 0;
+      }
+    }
+  }
+}
+
+// .DayHeader {
+//   @include larger-than(md) {
+//     grid-column: 2;
+//   }
+//   display: grid;
+//   position: sticky;
+//   top: 0;
+//   height: $min-header-height;
+// }
+
+// .DayCell {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   min-width: $min-cell-width;
+//   border-bottom: $border-style;
+//   // Avoid double line on the first column
+//   &:not(:first-of-type) {
+//     border-left: $border-style;
+//   }
+// }
+
+// .DayGrid {
+//   display: grid;
+//   border-top: none;
+
+//   &--Col {
+//     &:not(:first-of-type) {
+//       border-left: $border-style;
+//     }
+//   }
+// }

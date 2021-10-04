@@ -1,19 +1,27 @@
-@mixin screen-size($size) {
-  @if $size == sm {
-    @media (min-width: 640px) {
-      @content;
-    }
-  } @else if $size == md {
-    @media (min-width: 768px) {
-      @content;
-    }
-  } @else if $size == lg {
-    @media (min-width: 1024px) {
-      @content;
-    }
-  } @else if $size == xl {
-    @media (min-width: 1280px) {
+@import "./variable.scss";
+
+@mixin larger-than($name) {
+  @if not map-has-key($breakpoints, $name) {
+    @error "Invalid breakpoint: \'#{$name}\'.";
+  } @else {
+    @media (min-width: map-get($breakpoints, $name)) {
       @content;
     }
   }
+}
+
+@mixin smaller-than($name) {
+  @if not map-has-key($breakpoints, $name) {
+    @error "Invalid breakpoint: \'#{$name}\'.";
+  } @else {
+    @media (max-width: map-get($breakpoints, $name)) {
+      @content;
+    }
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

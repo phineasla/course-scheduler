@@ -1,0 +1,17 @@
+$breakpoints: (
+  // ~512px
+  xs: 32rem,
+  // ~768px
+  sm: 48rem,
+  // ~1024px
+  md: 64rem,
+  // ~1280px
+  lg: 80rem,
+  // ~1440px
+  xl: 90rem
+);
+
+$min-cell-width: 6rem;
+$min-timeline-width: 4rem;
+$min-header-height: 2rem;
+$border-style: 1px solid lightgray;

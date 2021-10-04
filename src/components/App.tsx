@@ -1,15 +1,16 @@
-import "./App.scss"
+import "./App.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Timetable } from "./Timetable";
 
 function App() {
   return (
-    <div className="App">
+    <div className="app">
       <header>
         <nav>
-          <div>
+          <div className="title">
             <svg
+              className="logo"
               width="54"
               height="54"
               viewBox="0 0 54 54"
@@ -19,7 +20,10 @@ function App() {
             </svg>
             <span>Course Scheduler</span>
           </div>
-          <a href="https://github.com/phineasla/course-scheduler">
+          <a
+            className="github"
+            href="https://github.com/phineasla/course-scheduler"
+          >
             <FontAwesomeIcon icon={faGithub} size="2x" />
           </a>
         </nav>
