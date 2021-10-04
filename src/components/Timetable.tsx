@@ -93,12 +93,9 @@ export const Timetable = ({
       </div>
       <div className="day--grid">
         {dayOfWeek.map((value, i) => (
-          <div
-            key={i}
-            style={{ height: `calc(${cellHeight} * ${timelineRange})` }}
-          >
+          <div key={i}>
             {timelineRange.map((value, j) => (
-              <div key={j} />
+              <div key={j} style={{ height: cellHeight }} />
             ))}
           </div>
         ))}
