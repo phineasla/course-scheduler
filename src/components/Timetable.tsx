@@ -3,7 +3,7 @@ import styled from "styled-components";
 import dayjs, { Dayjs } from "dayjs";
 import { timeRange } from "../utils/utils";
 
-const defaultDayOfWeek = [
+const defaultDaysOfWeek = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -13,93 +13,79 @@ const defaultDayOfWeek = [
   "Sunday",
 ];
 
-// const DayHeader = ({ dayOfWeek }: { dayOfWeek: string[] }) => {
-//   const DayHeaderDiv = styled.div`
-//     grid-template-columns: repeat(${dayOfWeek.length}, 1fr);
-//   `;
+const DayHeader = ({ daysOfWeek }: { daysOfWeek: string[] }) => {
+  return (
+    <div className="day--header">
+      {daysOfWeek.map((value, i) => (
+        <div key={i}>{value}</div>
+      ))}
+    </div>
+  );
+};
 
-//   return (
-//     <DayHeaderDiv className="DayHeader">
-//       {dayOfWeek.map((value, index, array) => (
-//         <span className="DayCell">{value}</span>
-//       ))}
-//     </DayHeaderDiv>
-//   );
-// };
+const Timeline = ({
+  timeRange,
+  height: cellHeight,
+}: {
+  timeRange: Dayjs[];
+  height: string;
+}) => {
+  return (
+    <div className="timeline" style={{ height: cellHeight }}>
+      {timeRange.map((value, i) => (
+        <div key={i}>{value.format("HH:mm")}</div>
+      ))}
+    </div>
+  );
+};
 
-// const Timeline = ({
-//   startTime,
-//   endTime,
-//   step,
-//   stepUnit,
-//   cellHeight,
-// }: {
-//   startTime: Dayjs;
-//   endTime: Dayjs;
-//   step: number;
-//   stepUnit: string;
-//   cellHeight: string;
-// }) => {
-//   const range = timeRange(startTime, endTime, step, stepUnit);
-//   return (
-//     <div className="timeline">
-//       {range.map((value, i) => (
-//         <div key={i} style={{ height: cellHeight }}>
-//           {value.format("HH:mm")}
-//         </div>
-//       ))}
-//     </div>
-//   );
-// };
-
-// const TimetableGrid = ({ numDayOfWeek }: { numDayOfWeek: number }) => {
-//   const TimetableGridDiv = styled.div`
-//     grid-template-columns: repeat(${numDayOfWeek}, 1fr);
-//   `;
-
-//   const gridCols = [];
-//   for (let i = 0; i < numDayOfWeek; i++) {
-//     gridCols.push(<div className="Timetable--Grid--Col"></div>);
-//   }
-
-//   return (
-//     <TimetableGridDiv className="Timetable--Grid">{gridCols}</TimetableGridDiv>
-//   );
-// };
+const DayGrid = ({
+  timeRange,
+  numDaysOfWeek,
+  height,
+}: {
+  timeRange: Dayjs[];
+  numDaysOfWeek: number;
+  height: string;
+}) => {
+  const col = [];
+  for (let i = 0; i < timeRange.length; i++) {
+    col.push(<div key={i}></div>);
+  }
+  const cols = [];
+  for (let i = 0; i < numDaysOfWeek; i++) {
+    cols.push(<div key={i}>{col}</div>);
+  }
+  return (
+    <div className="day--grid" style={{ height: height }}>
+      {cols}
+    </div>
+  );
+};
 
 export const Timetable = ({
-  dayOfWeek = defaultDayOfWeek,
+  daysOfWeek = defaultDaysOfWeek,
   startTime = dayjs().hour(7).minute(0),
-  endTime = dayjs().hour(17).minute(0),
+  endTime = dayjs().hour(15).minute(0),
   step = 1,
   stepUnit = "hour",
-  cellHeight = "3rem",
+  cellHeight = 3,
+  cellHeightUnit = "rem",
 }) => {
   const timelineRange = timeRange(startTime, endTime, step, stepUnit);
+  const yCells = timelineRange.length;
+  const xCells = daysOfWeek.length;
+  const totalHeight = `${cellHeight * yCells}${cellHeightUnit}`;
 
   return (
     <div className="timetable">
-      <div className="day--header">
-        {dayOfWeek.map((value, i) => (
-          <div key={i}>{value}</div>
-        ))}
-      </div>
-      <div className="timeline">
-        {timelineRange.map((value, i) => (
-          <div key={i} style={{ height: cellHeight }}>
-            {value.format("HH:mm")}
-          </div>
-        ))}
-      </div>
-      <div className="day--grid">
-        {dayOfWeek.map((value, i) => (
-          <div key={i}>
-            {timelineRange.map((value, j) => (
-              <div key={j} style={{ height: cellHeight }} />
-            ))}
-          </div>
-        ))}
-      </div>
+      <DayHeader daysOfWeek={daysOfWeek} />
+      <Timeline timeRange={timelineRange} height={totalHeight} />
+      <DayGrid
+        timeRange={timelineRange}
+        numDaysOfWeek={xCells}
+        height={totalHeight}
+      />
     </div>
   );
 };
