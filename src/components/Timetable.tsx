@@ -1,5 +1,4 @@
 import "./Timetable.scss";
-import styled from "styled-components";
 import dayjs, { Dayjs } from "dayjs";
 import { timeRange } from "../utils/utils";
 

@@ -1,24 +1,24 @@
 @import "./variable.scss";
 
-@mixin larger-than($name) {
-  @if not map-has-key($breakpoints, $name) {
-    @error "Invalid breakpoint: \'#{$name}\'.";
-  } @else {
-    @media (min-width: map-get($breakpoints, $name)) {
-      @content;
-    }
-  }
-}
+// @mixin larger-than($name) {
+//   @if not map-has-key($breakpoints, $name) {
+//     @error "Invalid breakpoint: \'#{$name}\'.";
+//   } @else {
+//     @media (min-width: map-get($breakpoints, $name)) {
+//       @content;
+//     }
+//   }
+// }
 
-@mixin smaller-than($name) {
-  @if not map-has-key($breakpoints, $name) {
-    @error "Invalid breakpoint: \'#{$name}\'.";
-  } @else {
-    @media (max-width: map-get($breakpoints, $name)) {
-      @content;
-    }
-  }
-}
+// @mixin smaller-than($name) {
+//   @if not map-has-key($breakpoints, $name) {
+//     @error "Invalid breakpoint: \'#{$name}\'.";
+//   } @else {
+//     @media (max-width: map-get($breakpoints, $name)) {
+//       @content;
+//     }
+//   }
+// }
 
 @mixin flex-center {
   display: flex;

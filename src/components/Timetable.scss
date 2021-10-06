@@ -1,3 +1,5 @@
+// For media() mixin. Detail: https://github.com/eduardoboucas/include-media
+@import "include-media";
 @import "../utils/mixin.scss";
 @import "../utils/variable.scss";
 
@@ -6,7 +8,7 @@
   overflow: auto;
   grid-template-columns: 1fr;
   // Add margin and timeline on medium screen and up
-  @include larger-than(md) {
+  @include media(">=md") {
     margin: 1rem;
     grid-template-columns: $min-timeline-width 1fr;
   }
@@ -14,7 +16,7 @@
 
 .timeline {
   // Hide timeline on small screen
-  @include smaller-than(md) {
+  @include media("<md") {
     display: none;
   }
   display: flex;
@@ -31,7 +33,7 @@
 
 .day {
   &--header {
-    @include larger-than(md) {
+    @include media(">=md") {
       grid-column: 2;
     }
     display: flex;
