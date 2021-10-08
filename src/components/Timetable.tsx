@@ -1,6 +1,8 @@
 import "./Timetable.scss";
-import dayjs, { Dayjs } from "dayjs";
-import { timeRange } from "../utils/utils";
+import { eachMinuteOfInterval, format, Interval } from "date-fns";
+import { Measurement } from "../types";
+import { hours } from "../utils/utils";
+import { EventGroup } from "./EventGroup";
 
 const defaultDaysOfWeek = [
   "Monday",
@@ -12,38 +14,28 @@ const defaultDaysOfWeek = [
   "Sunday",
 ];
 
-const DayHeader = ({ daysOfWeek }: { daysOfWeek: string[] }) => {
-  return (
-    <div className="day--header">
-      {daysOfWeek.map((value, i) => (
-        <div key={i}>{value}</div>
-      ))}
-    </div>
-  );
-};
-
 const Timeline = ({
   timeRange,
   height: cellHeight,
 }: {
-  timeRange: Dayjs[];
+  timeRange: Date[];
   height: string;
 }) => {
   return (
     <div className="timeline" style={{ height: cellHeight }}>
-      {timeRange.map((value, i) => (
-        <div key={i}>{value.format("HH:mm")}</div>
+      {timeRange.map((date, i) => (
+        <div key={i}>{format(date, "HH:mm")}</div>
       ))}
     </div>
   );
 };
 
-const DayGrid = ({
+const Grid = ({
   timeRange,
   numDaysOfWeek,
   height,
 }: {
-  timeRange: Dayjs[];
+  timeRange: Date[];
   numDaysOfWeek: number;
   height: string;
 }) => {
@@ -56,7 +48,7 @@ const DayGrid = ({
     cols.push(<div key={i}>{col}</div>);
   }
   return (
-    <div className="day--grid" style={{ height: height }}>
+    <div className="event-grid" style={{ height: height }}>
       {cols}
     </div>
   );
@@ -64,27 +56,36 @@ const DayGrid = ({
 
 export const Timetable = ({
   daysOfWeek = defaultDaysOfWeek,
-  startTime = dayjs().hour(7).minute(0),
-  endTime = dayjs().hour(15).minute(0),
-  step = 1,
-  stepUnit = "hour",
-  cellHeight = 3,
-  cellHeightUnit = "rem",
+  range = { start: hours(7), end: hours(17) },
+  stepInMinutes = 60,
+  cellHeight = { value: 3, unit: "rem" },
+}: {
+  daysOfWeek?: string[];
+  range?: Interval;
+  stepInMinutes?: number;
+  cellHeight?: Measurement;
 }) => {
-  const timelineRange = timeRange(startTime, endTime, step, stepUnit);
-  const yCells = timelineRange.length;
+  const timeRange = eachMinuteOfInterval(range, { step: stepInMinutes });
+  const yCells = timeRange.length;
   const xCells = daysOfWeek.length;
-  const totalHeight = `${cellHeight * yCells}${cellHeightUnit}`;
+  const totalHeight = `${cellHeight.value * yCells}${cellHeight.unit}`;
 
   return (
     <div className="timetable">
-      <DayHeader daysOfWeek={daysOfWeek} />
-      <Timeline timeRange={timelineRange} height={totalHeight} />
-      <DayGrid
-        timeRange={timelineRange}
-        numDaysOfWeek={xCells}
-        height={totalHeight}
-      />
+      <div className="timetable--header">
+        {daysOfWeek.map((value, i) => (
+          <div key={i}>{value}</div>
+        ))}
+      </div>
+      <Timeline timeRange={timeRange} height={totalHeight} />
+      <div className="timetable--body">
+        <Grid
+          timeRange={timeRange}
+          numDaysOfWeek={xCells}
+          height={totalHeight}
+        />
+        <EventGroup />
+      </div>
     </div>
   );
 };

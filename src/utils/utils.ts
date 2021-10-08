@@ -1,17 +1,10 @@
-import { Dayjs } from "dayjs";
-
-export const timeRange = (
-  start: Dayjs,
-  end: Dayjs,
-  step: number,
-  unit: string
+export const hours = (
+  hours: number,
+  min: number = 0,
+  sec: number = 0,
+  ms: number = 0
 ) => {
-  if (end.isBefore(start)) throw new Error("Wrong time order");
-  const range = [start];
-  let current = start;
-  while (current.isBefore(end)) {
-    current = current.add(step, unit);
-    range.push(current);
-  }
-  return range;
+  const time = new Date();
+  time.setHours(hours, min, sec, ms);
+  return time;
 };

@@ -1,0 +1,12 @@
+// For media() mixin. Detail: https://github.com/eduardoboucas/include-media
+@import "include-media";
+@import "../utils/mixin.scss";
+@import "../utils/variable.scss";
+
+.event-group {
+  // Overlap event-grid
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+}

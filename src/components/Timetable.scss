@@ -5,12 +5,42 @@
 
 .timetable {
   display: grid;
+  // resize: vertical;
   overflow: auto;
+  // Reset grid to hide timeline
   grid-template-columns: 1fr;
   // Add margin and timeline on medium screen and up
   @include media(">=md") {
     margin: 1rem;
-    grid-template-columns: $min-timeline-width 1fr;
+    grid-template-columns: $min-timetable-timeline-width 1fr;
+  }
+
+  &--header {
+    @include media(">=md") {
+      // Skip top left corner cell
+      grid-column: 2;
+    }
+    display: flex;
+    position: sticky;
+    top: 0;
+    height: $min-timetable-header-height;
+    background-color: white;
+
+    > div {
+      @include flex-center;
+      flex: 1;
+      min-width: $min-timetable-cell-width;
+      border: $border-style;
+      border-right: 0;
+      border-top: 0;
+      &:first-of-type {
+        border-left: 0;
+      }
+    }
+  }
+
+  &--body {
+    position: relative;
   }
 }
 
@@ -31,48 +61,24 @@
   }
 }
 
-.day {
-  &--header {
-    @include media(">=md") {
-      grid-column: 2;
-    }
+.event-grid {
+  display: flex;
+  // .Col
+  > div {
+    flex: 1;
     display: flex;
-    position: sticky;
-    top: 0;
-    height: $min-header-height;
-
-    > div {
-      @include flex-center;
-      flex: 1;
-      min-width: $min-cell-width;
-      border: $border-style;
-      border-right: 0;
-      border-top: 0;
-      &:first-of-type {
-        border-left: 0;
-      }
+    flex-direction: column;
+    border-left: $border-style;
+    &:first-of-type {
+      border-left: 0;
     }
-  }
-
-  &--grid {
-    display: flex;
-    // .Col
+    // .Cell
     > div {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      border-left: $border-style;
-      &:first-of-type {
-        border-left: 0;
-      }
-      // .Cell
-      > div {
-        flex: 1;
-        box-sizing: border-box;
-        border-bottom: $border-style;
-        &:last-of-type {
-          border-bottom: 0;
-        }
+      box-sizing: border-box;
+      border-bottom: $border-style;
+      &:last-of-type {
+        border-bottom: 0;
       }
     }
   }
