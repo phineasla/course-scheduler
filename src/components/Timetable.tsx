@@ -1,10 +1,18 @@
 import "./Timetable.scss";
-import { eachMinuteOfInterval, format, Interval } from "date-fns";
-import { Measurement } from "../types";
-import { hours } from "../utils/utils";
-import { EventGroup } from "./EventGroup";
+import styled from "styled-components";
+import { Course, CourseEvent, Measurement } from "../types";
+import {
+  set,
+  getDay,
+  format,
+  isSameDay,
+  isBefore,
+  eachMinuteOfInterval,
+  differenceInMinutes,
+} from "date-fns";
+import { setOnly, intervalToBox } from "../utils/utils";
 
-const defaultDaysOfWeek = [
+const defaultDays = [
   "Monday",
   "Tuesday",
   "Wednesday",
@@ -14,78 +22,181 @@ const defaultDaysOfWeek = [
   "Sunday",
 ];
 
-const Timeline = ({
-  timeRange,
-  height: cellHeight,
+const Wrapper = styled.div`
+  height: ${({ height }: { height: string }) => height};
+`;
+
+export const Timetable = ({
+  courses = [],
+  days = defaultDays,
+  times = eachMinuteOfInterval(
+    {
+      start: setOnly({ hour: 7 }),
+      end: setOnly({ hour: 15 }),
+    },
+    { step: 60 }
+  ),
+  rowHeight = { value: 3, unit: "rem" },
 }: {
-  timeRange: Date[];
-  height: string;
+  courses?: Course[];
+  days?: string[];
+  times?: Date[];
+  rowHeight?: Measurement;
+}) => {
+  const rowCount = times.length;
+  const columnCount = days.length;
+  const totalHeight = {
+    value: rowHeight.value * rowCount,
+    unit: rowHeight.unit,
+  };
+
+  courses = [
+    {
+      intervals: [
+        {
+          start: setOnly({ day: 1, hour: 8 }),
+          end: setOnly({ day: 1, hour: 10 }),
+        },
+        {
+          start: setOnly({ day: 3, hour: 8 }),
+          end: setOnly({ day: 3, hour: 11 }),
+        },
+      ],
+      info: { name: "c1", color: "blue" },
+    },
+  ];
+  console.log(courses);
+  // console.log("set func ", set(new Date(0), { year: undefined }));
+
+  // Sort classes into days of the week, with Sunday is 0, Monday is 1,...
+  const events: CourseEvent[][] = [...Array(7)].map(() => []);
+  for (let course of courses) {
+    const { intervals, info } = course;
+    for (let intvl of intervals) {
+      const { start, end } = intvl;
+      if (!isSameDay(start, end) || !isBefore(start, end))
+        throw new RangeError("Invalid course interval");
+      events[getDay(start)].push({ interval: intvl, info: info });
+    }
+  }
+
+  console.log(events);
+
+  return (
+    <div className="timetable">
+      <div className="timetable-header">
+        {days.map((value, i) => (
+          <div key={i}>{value}</div>
+        ))}
+      </div>
+      <Timeline times={times} height={totalHeight} />
+      <div className="timetable-body">
+        <Grid
+          rowCount={rowCount}
+          columnCount={columnCount}
+          height={totalHeight}
+        />
+        <EventGrid events={events} times={times} height={totalHeight} />
+      </div>
+    </div>
+  );
+};
+
+const Timeline = ({
+  times,
+  height,
+}: {
+  times: Date[];
+  height: Measurement;
 }) => {
   return (
-    <div className="timeline" style={{ height: cellHeight }}>
-      {timeRange.map((date, i) => (
+    <Wrapper className="timeline" height={`${height.value}${height.unit}`}>
+      {times.map((date, i) => (
         <div key={i}>{format(date, "HH:mm")}</div>
       ))}
-    </div>
+    </Wrapper>
   );
 };
 
 const Grid = ({
-  timeRange,
-  numDaysOfWeek,
+  rowCount,
+  columnCount,
   height,
 }: {
-  timeRange: Date[];
-  numDaysOfWeek: number;
-  height: string;
+  rowCount: number;
+  columnCount: number;
+  height: Measurement;
 }) => {
-  const col = [];
-  for (let i = 0; i < timeRange.length; i++) {
-    col.push(<div key={i}></div>);
+  const cells = [];
+  for (let i = 0; i < rowCount; i++) {
+    cells.push(<div key={i}></div>);
   }
   const cols = [];
-  for (let i = 0; i < numDaysOfWeek; i++) {
-    cols.push(<div key={i}>{col}</div>);
+  for (let i = 0; i < columnCount; i++) {
+    cols.push(<div key={i}>{cells}</div>);
   }
   return (
-    <div className="event-grid" style={{ height: height }}>
+    <Wrapper
+      className="timetable-grid"
+      height={`${height.value}${height.unit}`}
+    >
       {cols}
-    </div>
+    </Wrapper>
   );
 };
 
-export const Timetable = ({
-  daysOfWeek = defaultDaysOfWeek,
-  range = { start: hours(7), end: hours(17) },
-  stepInMinutes = 60,
-  cellHeight = { value: 3, unit: "rem" },
+const EventGrid = ({
+  events,
+  times,
+  height,
 }: {
-  daysOfWeek?: string[];
-  range?: Interval;
-  stepInMinutes?: number;
-  cellHeight?: Measurement;
+  events: CourseEvent[][];
+  times: Date[];
+  height: Measurement;
 }) => {
-  const timeRange = eachMinuteOfInterval(range, { step: stepInMinutes });
-  const yCells = timeRange.length;
-  const xCells = daysOfWeek.length;
-  const totalHeight = `${cellHeight.value * yCells}${cellHeight.unit}`;
+  const clampInterval = { start: times[0], end: times[times.length - 1] };
+  const duration = differenceInMinutes(clampInterval.end, clampInterval.start);
+  const minutesPerY = duration / height.value;
+
+  console.log(
+    intervalToBox(
+      events[1][0].interval,
+      clampInterval,
+      minutesPerY,
+      height.unit
+    )
+  );
 
   return (
-    <div className="timetable">
-      <div className="timetable--header">
-        {daysOfWeek.map((value, i) => (
-          <div key={i}>{value}</div>
-        ))}
+    <div className="event-grid">
+      {/* <div>
+        <div
+          className="event-box"
+          style={{ top: "20px", left: "0%", height: 30, width: "22%" }}
+        ></div>
+        <div
+          className="event-box"
+          style={{ top: "20px", left: "25%", height: 100, width: "22%" }}
+        ></div>
+        <div
+          className="event-box"
+          style={{ top: "20px", left: "50%", height: 30, width: "22%" }}
+        ></div>
+        <div
+          className="event-box"
+          style={{ top: "20px", left: "75%", height: 30, width: "22%" }}
+        ></div>
       </div>
-      <Timeline timeRange={timeRange} height={totalHeight} />
-      <div className="timetable--body">
-        <Grid
-          timeRange={timeRange}
-          numDaysOfWeek={xCells}
-          height={totalHeight}
-        />
-        <EventGroup />
-      </div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div> */}
     </div>
   );
 };
+
+const EventBox = (event: CourseEvent) => {};
+
+// const Column = ({ courseClasses }) => {};

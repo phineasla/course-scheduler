@@ -1,7 +1,7 @@
 import "./EventGroup.scss"
 
-export const EventGroup = ({}) => {
-  return <div className="event-group">
+// export const EventGroup = ({daysOfWeek, times}) => {
+//   return <div className="event-group">
       
-  </div>;
-};
+//   </div>;
+// };

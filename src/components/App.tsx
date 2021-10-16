@@ -2,8 +2,16 @@ import "./App.scss";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Timetable } from "./Timetable";
+import { eachMinuteOfInterval, set } from "date-fns";
 
 function App() {
+  const times = eachMinuteOfInterval(
+    {
+      start: set(new Date(), { hours: 7, minutes: 0 }),
+      end: set(new Date(), { hours: 17, minutes: 0 }),
+    },
+    { step: 60 }
+  );
   return (
     <>
       <header>
@@ -24,6 +32,7 @@ function App() {
           <a
             className="github"
             href="https://github.com/phineasla/course-scheduler"
+            target="_blank"
           >
             <FontAwesomeIcon icon={faGithub} size="2x" />
           </a>
