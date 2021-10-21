@@ -1,16 +1,9 @@
 import "./Timetable.scss";
 import styled from "styled-components";
-import { Course, CourseEvent, Measurement } from "../types";
-import {
-  set,
-  getDay,
-  format,
-  isSameDay,
-  isBefore,
-  eachMinuteOfInterval,
-  differenceInMinutes,
-} from "date-fns";
-import { setOnly, intervalToBox } from "../utils/utils";
+import { EventGrid } from "./EventGrid";
+import { Course, Size } from "../types";
+import { setOnly, sizeToString } from "../utils/utils";
+import { format, eachMinuteOfInterval } from "date-fns";
 
 const defaultDays = [
   "Monday",
@@ -26,35 +19,41 @@ const Wrapper = styled.div`
   height: ${({ height }: { height: string }) => height};
 `;
 
+/**
+ *
+ * @param courses - Array of courses
+ * @param timeInterval - The start and end time for timeline with 15-minute precision
+ * @param weekStartOnSunday
+ * @param minutesPerCell
+ * @param cellHeight
+ */
 export const Timetable = ({
   courses = [],
-  days = defaultDays,
-  times = eachMinuteOfInterval(
-    {
-      start: setOnly({ hour: 7 }),
-      end: setOnly({ hour: 15 }),
-    },
-    { step: 60 }
-  ),
-  rowHeight = { value: 3, unit: "rem" },
+  timeInterval,
+  weekStartOnSunday,
+  minutesPerCell,
+  cellHeight,
 }: {
-  courses?: Course[];
-  days?: string[];
-  times?: Date[];
-  rowHeight?: Measurement;
+  courses: Course[];
+  timeInterval: Interval;
+  weekStartOnSunday: boolean;
+  minutesPerCell: number;
+  cellHeight: Size;
 }) => {
+  const days = defaultDays;
+  const times = eachMinuteOfInterval(timeInterval, { step: minutesPerCell });
   const rowCount = times.length;
   const columnCount = days.length;
   const totalHeight = {
-    value: rowHeight.value * rowCount,
-    unit: rowHeight.unit,
+    value: cellHeight.value * rowCount,
+    unit: cellHeight.unit,
   };
 
   courses = [
     {
       intervals: [
         {
-          start: setOnly({ day: 1, hour: 8 }),
+          start: setOnly({ day: 1, hour: 8, min: 0 }),
           end: setOnly({ day: 1, hour: 10 }),
         },
         {
@@ -65,22 +64,7 @@ export const Timetable = ({
       info: { name: "c1", color: "blue" },
     },
   ];
-  console.log(courses);
-  // console.log("set func ", set(new Date(0), { year: undefined }));
-
-  // Sort classes into days of the week, with Sunday is 0, Monday is 1,...
-  const events: CourseEvent[][] = [...Array(7)].map(() => []);
-  for (let course of courses) {
-    const { intervals, info } = course;
-    for (let intvl of intervals) {
-      const { start, end } = intvl;
-      if (!isSameDay(start, end) || !isBefore(start, end))
-        throw new RangeError("Invalid course interval");
-      events[getDay(start)].push({ interval: intvl, info: info });
-    }
-  }
-
-  console.log(events);
+  // console.log(courses);
 
   return (
     <div className="timetable">
@@ -96,21 +80,20 @@ export const Timetable = ({
           columnCount={columnCount}
           height={totalHeight}
         />
-        <EventGrid events={events} times={times} height={totalHeight} />
+        <EventGrid
+          courses={courses}
+          timeInterval={timeInterval}
+          cellHeight={cellHeight}
+          minutesPerCell={minutesPerCell}
+        />
       </div>
     </div>
   );
 };
 
-const Timeline = ({
-  times,
-  height,
-}: {
-  times: Date[];
-  height: Measurement;
-}) => {
+const Timeline = ({ times, height }: { times: Date[]; height: Size }) => {
   return (
-    <Wrapper className="timeline" height={`${height.value}${height.unit}`}>
+    <Wrapper className="timeline" height={sizeToString(height)}>
       {times.map((date, i) => (
         <div key={i}>{format(date, "HH:mm")}</div>
       ))}
@@ -125,7 +108,7 @@ const Grid = ({
 }: {
   rowCount: number;
   columnCount: number;
-  height: Measurement;
+  height: Size;
 }) => {
   const cells = [];
   for (let i = 0; i < rowCount; i++) {
@@ -136,67 +119,10 @@ const Grid = ({
     cols.push(<div key={i}>{cells}</div>);
   }
   return (
-    <Wrapper
-      className="timetable-grid"
-      height={`${height.value}${height.unit}`}
-    >
+    <Wrapper className="timetable-grid" height={sizeToString(height)}>
       {cols}
     </Wrapper>
   );
 };
-
-const EventGrid = ({
-  events,
-  times,
-  height,
-}: {
-  events: CourseEvent[][];
-  times: Date[];
-  height: Measurement;
-}) => {
-  const clampInterval = { start: times[0], end: times[times.length - 1] };
-  const duration = differenceInMinutes(clampInterval.end, clampInterval.start);
-  const minutesPerY = duration / height.value;
-
-  console.log(
-    intervalToBox(
-      events[1][0].interval,
-      clampInterval,
-      minutesPerY,
-      height.unit
-    )
-  );
-
-  return (
-    <div className="event-grid">
-      {/* <div>
-        <div
-          className="event-box"
-          style={{ top: "20px", left: "0%", height: 30, width: "22%" }}
-        ></div>
-        <div
-          className="event-box"
-          style={{ top: "20px", left: "25%", height: 100, width: "22%" }}
-        ></div>
-        <div
-          className="event-box"
-          style={{ top: "20px", left: "50%", height: 30, width: "22%" }}
-        ></div>
-        <div
-          className="event-box"
-          style={{ top: "20px", left: "75%", height: 30, width: "22%" }}
-        ></div>
-      </div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div> */}
-    </div>
-  );
-};
-
-const EventBox = (event: CourseEvent) => {};
 
 // const Column = ({ courseClasses }) => {};

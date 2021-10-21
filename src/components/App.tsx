@@ -1,17 +1,24 @@
 import "./App.scss";
+import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Timetable } from "./Timetable";
-import { eachMinuteOfInterval, set } from "date-fns";
+import { setOnly } from "../utils/utils";
+
+const timetableDefaultConfig = {
+  timeInterval: {
+    start: setOnly({ hour: 7, min: 30 }),
+    end: setOnly({ hour: 15 }),
+  },
+  weekStartOnSunday: false,
+  minutesPerCell: 60,
+  cellHeight: { value: 3, unit: "rem" },
+};
 
 function App() {
-  const times = eachMinuteOfInterval(
-    {
-      start: set(new Date(), { hours: 7, minutes: 0 }),
-      end: set(new Date(), { hours: 17, minutes: 0 }),
-    },
-    { step: 60 }
-  );
+  const [courses, setCourses] = useState([]);
+  const [selectedCourses, setSelectedCourses] = useState([]);
+
   return (
     <>
       <header>
@@ -33,12 +40,13 @@ function App() {
             className="github"
             href="https://github.com/phineasla/course-scheduler"
             target="_blank"
+            rel="noopener noreferrer"
           >
             <FontAwesomeIcon icon={faGithub} size="2x" />
           </a>
         </nav>
       </header>
-      <Timetable />
+      <Timetable courses={selectedCourses} {...timetableDefaultConfig} />
     </>
   );
 }

@@ -57,7 +57,6 @@
     // Fill column with cells
     > div {
       flex: 1;
-      box-sizing: border-box;
       border-bottom: $border-style;
       &:last-of-type {
         border-bottom: 0;
@@ -80,30 +79,5 @@
     flex: 1;
     display: flex;
     justify-content: center;
-  }
-}
-
-.event-grid {
-  // Overlap timetable-grid
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  > div {
-    flex: 1;
-    position: relative;
-    // border: solid black;
-  }
-}
-
-.event-box {
-  position: absolute;
-  box-sizing: border-box;
-  border: solid blue;
-  border-radius: 5px;
-  &:hover {
-    left: 0 !important;
-    width: 100% !important;
   }
 }

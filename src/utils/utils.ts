@@ -2,34 +2,31 @@ import {
   set,
   setDay,
   differenceInMinutes,
-  isWithinInterval,
-  setHours,
   toDate,
 } from "date-fns";
-import { Box } from "../types";
+import { Size } from "../types";
+
+const unixEpoch = { year: 1970, month: 0, date: 1 };
 
 /**
  * Shorthand for `new Date(0)`, [`setDay()`](https://date-fns.org/v2.25.0/docs/setDay)
  * and [`set()`](https://date-fns.org/v2.25.0/docs/set)
  * @returns Date
  */
-export const setOnly = (
-  {
-    day,
-    hour,
-    min,
-    sec,
-    ms,
-  }: {
-    day?: number;
-    hour?: number;
-    min?: number;
-    sec?: number;
-    ms?: number;
-  },
-  date: Date | number = 0
-) => {
-  return set(day != null ? setDay(date, day) : date, {
+export const setOnly = ({
+  day,
+  hour,
+  min,
+  sec,
+  ms,
+}: {
+  day?: number;
+  hour?: number;
+  min?: number;
+  sec?: number;
+  ms?: number;
+}) => {
+  return set(day != null ? setDay(0, day) : 0, {
     hours: hour,
     minutes: min,
     seconds: sec,
@@ -38,11 +35,47 @@ export const setOnly = (
 };
 
 /**
+ * Get the Date object with year, month, date as to Unix Epoch
+ * @param date - the given date
+ */
+export const getTimeOfDay = (date: Date | number) => {
+  return set(toDate(date), unixEpoch);
+};
+
+/**
+ * Get the signed number of full (rounded towards 0) minutes between the given time.
+ * This means that year, month and date are removed.
+ * @param dateLeft - the later date
+ * @param dateRight - the earlier date
+ * @param options - see [differenceInMinutes](https://date-fns.org/v2.25.0/docs/differenceInMinutes)
+ */
+export const differenceInMinutesOfDay = (
+  dateLeft: Date | number,
+  dateRight: Date | number,
+  options?: { roundingMethod: string }
+) => {
+  const left = toDate(dateLeft);
+  const right = toDate(dateRight);
+  return differenceInMinutes(
+    left,
+    set(right, {
+      year: left.getFullYear(),
+      month: left.getMonth(),
+      date: left.getDate(),
+    }),
+    options
+  );
+};
+
+/**
  * Is the given time within the interval (ignoring date).
  * @param time - the time to check.
  * @param interval - the interval to check.
  */
-export const isWithinTimeInterval = (time: Date | number, interval: Interval) => {
+export const isWithinTimeInterval = (
+  time: Date | number,
+  interval: Interval
+) => {
   const startTime = toDate(interval.start);
   const date = {
     year: startTime.getFullYear(),
@@ -57,25 +90,6 @@ export const isWithinTimeInterval = (time: Date | number, interval: Interval) =>
   return dirtyTime >= startTime && dirtyTime <= endTime;
 };
 
-export const intervalToBox = (
-  interval: Interval,
-  clampInterval: Interval,
-  minutesPerY: number,
-  verticalUnit: string
-): Box | null => {
-  console.log(interval);
-  console.log(clampInterval);
-  if (
-    !isWithinTimeInterval(interval.start, clampInterval) &&
-    !isWithinTimeInterval(interval.end, clampInterval)
-  )
-    return null;
-  const { start, end } = interval;
-  const { start: clampStart, end: clampEnd } = clampInterval;
-  const top = differenceInMinutes(start, clampStart) / minutesPerY;
-  const height = differenceInMinutes(end, start) / minutesPerY;
-  return {
-    top: { value: top, unit: verticalUnit },
-    height: { value: height, unit: verticalUnit },
-  };
+export const sizeToString = ({ value, unit }: Size) => {
+  return `${value}${unit}`;
 };
