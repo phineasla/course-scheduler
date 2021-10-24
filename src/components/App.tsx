@@ -1,9 +1,10 @@
 import "./App.scss";
+import Timetable from "./Timetable";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
-import { Timetable } from "./Timetable";
-import { setOnly } from "../utils/utils";
+import { Course } from "../types";
+import { setOnly } from "../utils/Utils";
 
 const timetableDefaultConfig = {
   timeInterval: {
@@ -17,7 +18,40 @@ const timetableDefaultConfig = {
 
 function App() {
   const [courses, setCourses] = useState([]);
-  const [selectedCourses, setSelectedCourses] = useState([]);
+  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
+
+  // setSelectedCourses([
+  //   {
+  //     info: { name: "c1", color: "blue" },
+  //     intervals: [
+  //       {
+  //         start: setOnly({ day: 1, hour: 8, min: 0 }),
+  //         end: setOnly({ day: 1, hour: 10 }),
+  //       },
+  //       {
+  //         start: setOnly({ day: 3, hour: 8 }),
+  //         end: setOnly({ day: 3, hour: 11 }),
+  //       },
+  //     ],
+  //   },
+  //   {
+  //     info: { name: "c2", color: "green" },
+  //     intervals: [
+  //       {
+  //         start: setOnly({ day: 1, hour: 8, min: 30 }),
+  //         end: setOnly({ day: 1, hour: 10 }),
+  //       },
+  //       {
+  //         start: setOnly({ day: 2, hour: 9 }),
+  //         end: setOnly({ day: 2, hour: 10 }),
+  //       },
+  //       {
+  //         start: setOnly({ day: 2, hour: 1 }),
+  //         end: setOnly({ day: 2, hour: 2 }),
+  //       },
+  //     ],
+  //   },
+  // ]);
 
   return (
     <>

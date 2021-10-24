@@ -2,17 +2,17 @@ import "./Timetable.scss";
 import styled from "styled-components";
 import { EventGrid } from "./EventGrid";
 import { Course, Size } from "../types";
-import { setOnly, sizeToString } from "../utils/utils";
+import { setOnly, sizeToString } from "../utils/Utils";
 import { format, eachMinuteOfInterval } from "date-fns";
 
 const defaultDays = [
+  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
   "Saturday",
-  "Sunday",
 ];
 
 const Wrapper = styled.div`
@@ -22,12 +22,12 @@ const Wrapper = styled.div`
 /**
  *
  * @param courses - Array of courses
- * @param timeInterval - The start and end time for timeline with 15-minute precision
+ * @param timeInterval - The start and end time for timeline with 5-minute precision
  * @param weekStartOnSunday
  * @param minutesPerCell
  * @param cellHeight
  */
-export const Timetable = ({
+export default function Timetable({
   courses = [],
   timeInterval,
   weekStartOnSunday,
@@ -39,7 +39,7 @@ export const Timetable = ({
   weekStartOnSunday: boolean;
   minutesPerCell: number;
   cellHeight: Size;
-}) => {
+}) {
   const days = defaultDays;
   const times = eachMinuteOfInterval(timeInterval, { step: minutesPerCell });
   const rowCount = times.length;
@@ -48,9 +48,12 @@ export const Timetable = ({
     value: cellHeight.value * rowCount,
     unit: cellHeight.unit,
   };
+  // Move Sunday to the back
+  if (!weekStartOnSunday) days.push(days.shift()!);
 
   courses = [
     {
+      info: { name: "c1", color: "blue" },
       intervals: [
         {
           start: setOnly({ day: 1, hour: 8, min: 0 }),
@@ -61,18 +64,30 @@ export const Timetable = ({
           end: setOnly({ day: 3, hour: 11 }),
         },
       ],
-      info: { name: "c1", color: "blue" },
+    },
+    {
+      info: { name: "c2", color: "green" },
+      intervals: [
+        {
+          start: setOnly({ day: 1, hour: 10 }),
+          end: setOnly({ day: 1, hour: 11 }),
+        },
+        {
+          start: setOnly({ day: 2, hour: 9 }),
+          end: setOnly({ day: 2, hour: 10 }),
+        },
+        {
+          start: setOnly({ day: 2, hour: 1 }),
+          end: setOnly({ day: 2, hour: 2 }),
+        },
+      ],
     },
   ];
   // console.log(courses);
 
   return (
     <div className="timetable">
-      <div className="timetable-header">
-        {days.map((value, i) => (
-          <div key={i}>{value}</div>
-        ))}
-      </div>
+      <Header days={days} />
       <Timeline times={times} height={totalHeight} />
       <div className="timetable-body">
         <Grid
@@ -85,13 +100,24 @@ export const Timetable = ({
           timeInterval={timeInterval}
           cellHeight={cellHeight}
           minutesPerCell={minutesPerCell}
+          weekStartOnSunday={weekStartOnSunday}
         />
       </div>
     </div>
   );
-};
+}
 
-const Timeline = ({ times, height }: { times: Date[]; height: Size }) => {
+function Header({ days }: { days: String[] }) {
+  return (
+    <div className="timetable-header">
+      {days.map((value, i) => (
+        <div key={i}>{value}</div>
+      ))}
+    </div>
+  );
+}
+
+function Timeline({ times, height }: { times: Date[]; height: Size }) {
   return (
     <Wrapper className="timeline" height={sizeToString(height)}>
       {times.map((date, i) => (
@@ -99,9 +125,9 @@ const Timeline = ({ times, height }: { times: Date[]; height: Size }) => {
       ))}
     </Wrapper>
   );
-};
+}
 
-const Grid = ({
+function Grid({
   rowCount,
   columnCount,
   height,
@@ -109,7 +135,7 @@ const Grid = ({
   rowCount: number;
   columnCount: number;
   height: Size;
-}) => {
+}) {
   const cells = [];
   for (let i = 0; i < rowCount; i++) {
     cells.push(<div key={i}></div>);
@@ -123,6 +149,4 @@ const Grid = ({
       {cols}
     </Wrapper>
   );
-};
-
-// const Column = ({ courseClasses }) => {};
+}

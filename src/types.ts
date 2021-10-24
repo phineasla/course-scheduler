@@ -5,7 +5,7 @@ export type Course = {
   info: CourseInfo;
 };
 export type CourseEvent = {
-  interval: Interval;
+  time: Interval;
   info: CourseInfo;
 };
 export type Box = {
