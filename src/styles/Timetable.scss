@@ -5,7 +5,9 @@
 
 .timetable {
   display: grid;
-  // resize: vertical;
+  resize: vertical;
+  min-height: 15rem;
+  height: 25rem;
   overflow: auto;
   // Reset grid to hide timeline
   grid-template-columns: 1fr;
@@ -15,6 +17,7 @@
     grid-template-columns: $min-timetable-timeline-width 1fr;
   }
 }
+
 .timetable-header {
   @include media(">=md") {
     // Skip top left corner cell
@@ -22,6 +25,7 @@
   }
   display: flex;
   position: sticky;
+  z-index: 1;
   top: 0;
   height: $min-timetable-header-height;
   background-color: white;

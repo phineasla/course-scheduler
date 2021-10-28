@@ -1,66 +1,77 @@
-import "./EventGrid.scss";
+import "../styles/EventGrid.scss";
 import styled from "styled-components";
+import EventItem from "./EventItem";
 import { Course, CourseEvent, Size, Box } from "../types";
-import {
-  differenceInMinutesOfDay,
-  isWithinTimeInterval,
-  sizeToString,
-} from "../utils/Utils";
-import { getDay, isSameDay, isBefore, differenceInMinutes } from "date-fns";
+import { differenceInMinutesOfDay, isWithinTimeInterval } from "../utils/Utils";
+import { getDay, isSameDay, isBefore } from "date-fns";
 
-export function EventGrid({
+export default function EventGrid({
   courses,
-  timeInterval,
+  timeStart,
+  timeEnd,
   cellHeight,
   minutesPerCell,
   weekStartOnSunday,
 }: {
   courses: Course[];
-  timeInterval: Interval;
+  timeStart: Date;
+  timeEnd: Date;
   cellHeight: Size;
   minutesPerCell: number;
   weekStartOnSunday: boolean;
 }) {
+  // Minutes per vertical unit
   const minutesPerY = minutesPerCell / cellHeight.value;
-  const events = mapCourseToDayOfWeek(courses);
+  const dayColumns = mapCourseToDayOfWeek(courses);
+  // Move Sunday to the back
+  if (!weekStartOnSunday) {
+    dayColumns.push(dayColumns.shift()!);
+  }
 
   // console.log(minutesPerCell);
   // console.log(cellHeight);
   // const t = events[1][0].interval;
   // console.log(differenceInMinutes(t.end, t.start));
-  const testEvent = intervalToBox(
-    events[1][0].time,
-    timeInterval,
-    minutesPerY,
-    cellHeight.unit
-  );
+  // const testEvent = intervalToBox(
+  //   events[1][0].time,
+  //   timeInterval,
+  //   minutesPerY,
+  //   cellHeight.unit
+  // );
   // console.log(testEvent);
 
   return (
     <div className="event-grid">
-      {mapCourseToDayOfWeek(courses).map((events, i) => (
+      {dayColumns.map((events, i) => (
         <DayColumn
           key={i}
           events={events}
-          cellHeight={cellHeight}
-          minutesPerCell={minutesPerCell}
+          timeStart={timeStart}
+          timeEnd={timeEnd}
+          minutesPerY={minutesPerY}
         />
       ))}
     </div>
   );
 }
 
+/**
+ * Each `DayColumn` represent a day of week (i.e. Monday, Tuesday, ...)
+ * @see [Algorithm to layout events with maximum width](https://stackoverflow.com/q/11311410/12405558)
+ */
 function DayColumn({
   events,
-  cellHeight,
-  minutesPerCell,
+  timeStart,
+  timeEnd,
+  minutesPerY,
 }: {
   events: CourseEvent[];
-  cellHeight: Size;
-  minutesPerCell: number;
+  timeStart: Date;
+  timeEnd: Date;
+  minutesPerY: number;
 }) {
   // Each group contains columns of events that overlap.
-  const eventGroup: CourseEvent[][][] = [];
+  const eventGroups: CourseEvent[][][] = [];
   // Each column contains events that do not overlap.
   let subCols: CourseEvent[][] = [];
   let lastEventEnding: Date | number | null = null;
@@ -79,7 +90,7 @@ function DayColumn({
         // The event is later than any of the events in the
         // current group. There is no overlap. Output the
         // current event group and start a new one.
-        eventGroup.push(subCols);
+        eventGroups.push(subCols);
         // Reset
         subCols = [];
         lastEventEnding = null;
@@ -104,9 +115,31 @@ function DayColumn({
       if (lastEventEnding == null || ev.time.end > lastEventEnding)
         lastEventEnding = ev.time.end;
     });
-  eventGroup.push(subCols);
-  console.log(eventGroup);
-  return <div></div>;
+  eventGroups.push(subCols);
+  // console.log(eventGroups);
+  return (
+    <>
+      {eventGroups.map((subCols: CourseEvent[][]) =>
+        subCols.map((subCol: CourseEvent[], subColIdx) =>
+          subCol.map((ev: CourseEvent) => {
+            return (
+              <EventItem
+                key={ev.info.id}
+                info={ev}
+                timelineStart={timeStart}
+                timelineEnd={timeEnd}
+                minutesPerY={minutesPerY}
+                leftPercent={subColIdx / subCols.length}
+                widthPercent={
+                  expandWidth(ev, subColIdx, subCols) / subCols.length
+                }
+              ></EventItem>
+            );
+          })
+        )
+      )}
+    </>
+  );
 }
 
 /**
@@ -124,27 +157,6 @@ function mapCourseToDayOfWeek(courses: Course[]) {
     }
   }
   return events;
-}
-
-function intervalToBox(
-  interval: Interval,
-  clampInterval: Interval,
-  minutesPerY: number,
-  verticalUnit: string
-): Box | null {
-  if (
-    !isWithinTimeInterval(interval.start, clampInterval) &&
-    !isWithinTimeInterval(interval.end, clampInterval)
-  )
-    return null;
-  const { start, end } = interval;
-  const { start: clampStart } = clampInterval;
-  const top = differenceInMinutesOfDay(start, clampStart) / minutesPerY;
-  const height = differenceInMinutesOfDay(end, start) / minutesPerY;
-  return {
-    top: { value: top, unit: verticalUnit },
-    height: { value: height, unit: verticalUnit },
-  };
 }
 
 function isColliding(a: Interval, b: Interval) {

@@ -1,9 +1,17 @@
-import "./Timetable.scss";
+import "../styles/Timetable.scss";
 import styled from "styled-components";
-import { EventGrid } from "./EventGrid";
+import EventGrid from "./EventGrid";
 import { Course, Size } from "../types";
 import { setOnly, sizeToString } from "../utils/Utils";
-import { format, eachMinuteOfInterval } from "date-fns";
+import { format, eachMinuteOfInterval, roundToNearestMinutes } from "date-fns";
+
+/**
+ * Use undefined for 1-hour precision,
+ * @see https://date-fns.org/v2.25.0/docs/roundToNearestMinutes
+ */
+const minutePrecision = {
+  nearestTo: 30,
+};
 
 const defaultDays = [
   "Sunday",
@@ -22,27 +30,36 @@ const Wrapper = styled.div`
 /**
  *
  * @param courses - Array of courses
- * @param timeInterval - The start and end time for timeline with 5-minute precision
+ * @param timeInterval - The start and end time with precision equals `minutePrecision`.
+ * For example, if `timeInterval.start = 07:12:00` and `minutePrecision = 15`
+ * => `roundedTimeInterval.start = 07:15:00`
  * @param weekStartOnSunday
  * @param minutesPerCell
  * @param cellHeight
  */
 export default function Timetable({
   courses = [],
-  timeInterval,
+  timeStart,
+  timeEnd,
   weekStartOnSunday,
   minutesPerCell,
   cellHeight,
 }: {
   courses: Course[];
-  timeInterval: Interval;
+  timeStart: Date;
+  timeEnd: Date;
   weekStartOnSunday: boolean;
   minutesPerCell: number;
   cellHeight: Size;
 }) {
   const days = defaultDays;
-  const times = eachMinuteOfInterval(timeInterval, { step: minutesPerCell });
-  const rowCount = times.length;
+  const roundedStart = roundToNearestMinutes(timeStart, minutePrecision);
+  const roundedEnd = roundToNearestMinutes(timeEnd, minutePrecision);
+  const timemarks = eachMinuteOfInterval(
+    { start: roundedStart, end: roundedEnd },
+    { step: minutesPerCell }
+  );
+  const rowCount = timemarks.length;
   const columnCount = days.length;
   const totalHeight = {
     value: cellHeight.value * rowCount,
@@ -53,7 +70,7 @@ export default function Timetable({
 
   courses = [
     {
-      info: { name: "c1", color: "blue" },
+      info: { id: "1234", name: "c1", color: "blue" },
       intervals: [
         {
           start: setOnly({ day: 1, hour: 8, min: 0 }),
@@ -66,10 +83,10 @@ export default function Timetable({
       ],
     },
     {
-      info: { name: "c2", color: "green" },
+      info: { id: "4567", name: "c2", color: "green" },
       intervals: [
         {
-          start: setOnly({ day: 1, hour: 10 }),
+          start: setOnly({ day: 1, hour: 9 }),
           end: setOnly({ day: 1, hour: 11 }),
         },
         {
@@ -83,12 +100,11 @@ export default function Timetable({
       ],
     },
   ];
-  // console.log(courses);
 
   return (
     <div className="timetable">
       <Header days={days} />
-      <Timeline times={times} height={totalHeight} />
+      <Timeline timemarks={timemarks} height={totalHeight} />
       <div className="timetable-body">
         <Grid
           rowCount={rowCount}
@@ -97,7 +113,8 @@ export default function Timetable({
         />
         <EventGrid
           courses={courses}
-          timeInterval={timeInterval}
+          timeStart={timeStart}
+          timeEnd={timeEnd}
           cellHeight={cellHeight}
           minutesPerCell={minutesPerCell}
           weekStartOnSunday={weekStartOnSunday}
@@ -117,10 +134,10 @@ function Header({ days }: { days: String[] }) {
   );
 }
 
-function Timeline({ times, height }: { times: Date[]; height: Size }) {
+function Timeline({ timemarks, height }: { timemarks: Date[]; height: Size }) {
   return (
     <Wrapper className="timeline" height={sizeToString(height)}>
-      {times.map((date, i) => (
+      {timemarks.map((date, i) => (
         <div key={i}>{format(date, "HH:mm")}</div>
       ))}
     </Wrapper>

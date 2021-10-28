@@ -1,4 +1,4 @@
-import "./App.scss";
+import "../styles/App.scss";
 import Timetable from "./Timetable";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -7,10 +7,8 @@ import { Course } from "../types";
 import { setOnly } from "../utils/Utils";
 
 const timetableDefaultConfig = {
-  timeInterval: {
-    start: setOnly({ hour: 7, min: 30 }),
-    end: setOnly({ hour: 15 }),
-  },
+  timeStart: setOnly({ hour: 7, min: 10 }),
+  timeEnd: setOnly({ hour: 15 }),
   weekStartOnSunday: false,
   minutesPerCell: 60,
   cellHeight: { value: 3, unit: "rem" },
