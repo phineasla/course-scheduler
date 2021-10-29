@@ -1,13 +1,13 @@
 // For media() mixin. Detail: https://github.com/eduardoboucas/include-media
 @import "include-media";
-@import "../utils/mixin.scss";
-@import "../utils/variable.scss";
+@import "./mixin.scss";
+@import "./global.scss";
 
 .timetable {
   display: grid;
   resize: vertical;
-  min-height: 15rem;
-  height: 25rem;
+  min-height: $min-timetable-height;
+  height: $timetable-height;
   overflow: auto;
   // Reset grid to hide timeline
   grid-template-columns: 1fr;
@@ -25,6 +25,7 @@
   }
   display: flex;
   position: sticky;
+  // Prevent timetable-body to overlap when scrolling
   z-index: 1;
   top: 0;
   height: $min-timetable-header-height;

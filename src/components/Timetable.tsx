@@ -23,6 +23,9 @@ const defaultDays = [
   "Saturday",
 ];
 
+const TimetableWrapper = styled.div`
+  max-height: ${({ maxHeight }: { maxHeight: string }) => maxHeight};
+`;
 const Wrapper = styled.div`
   height: ${({ height }: { height: string }) => height};
 `;
@@ -102,7 +105,10 @@ export default function Timetable({
   ];
 
   return (
-    <div className="timetable">
+    <TimetableWrapper
+      className="timetable"
+      maxHeight={sizeToString(totalHeight)}
+    >
       <Header days={days} />
       <Timeline timemarks={timemarks} height={totalHeight} />
       <div className="timetable-body">
@@ -120,7 +126,7 @@ export default function Timetable({
           weekStartOnSunday={weekStartOnSunday}
         />
       </div>
-    </div>
+    </TimetableWrapper>
   );
 }
 

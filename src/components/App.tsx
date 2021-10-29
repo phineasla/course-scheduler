@@ -8,10 +8,10 @@ import { setOnly } from "../utils/Utils";
 
 const timetableDefaultConfig = {
   timeStart: setOnly({ hour: 7, min: 10 }),
-  timeEnd: setOnly({ hour: 15 }),
+  timeEnd: setOnly({ hour: 17 }),
   weekStartOnSunday: false,
   minutesPerCell: 60,
-  cellHeight: { value: 3, unit: "rem" },
+  cellHeight: { value: 2, unit: "rem" },
 };
 
 function App() {
