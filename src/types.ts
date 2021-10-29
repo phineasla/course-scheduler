@@ -13,9 +13,12 @@ export type CourseEvent = {
   time: Interval;
   info: CourseInfo;
 };
-export type Box = {
-  top: Size;
-  left?: Size;
-  height: Size;
-  width?: Size;
+export type TimetableState = {
+  timeStart: Date;
+  timeEnd: Date;
+  weekStartOnSunday: boolean;
+  minutesPerCell: number;
+  cellHeight: Size;
+  minutesPerVertUnit?: number;
+  vertUnit?: string;
 };

@@ -1,8 +1,12 @@
 import "../styles/EventGrid.scss";
 import styled from "styled-components";
 import EventItem from "./EventItem";
-import { Course, CourseEvent, Size, Box } from "../types";
-import { differenceInMinutesOfDay, isWithinTimeInterval } from "../utils/Utils";
+import { Course, CourseEvent, Size } from "../types";
+import {
+  differenceInMinutesOfDay,
+  getTimeOfDay,
+  isWithinTimeInterval,
+} from "../utils/Utils";
 import { getDay, isSameDay, isBefore } from "date-fns";
 
 export default function EventGrid({
@@ -118,27 +122,33 @@ function DayColumn({
   eventGroups.push(subCols);
   // console.log(eventGroups);
   return (
-    <>
+    <div>
       {eventGroups.map((subCols: CourseEvent[][]) =>
         subCols.map((subCol: CourseEvent[], subColIdx) =>
           subCol.map((ev: CourseEvent) => {
-            return (
-              <EventItem
-                key={ev.info.id}
-                info={ev}
-                timelineStart={timeStart}
-                timelineEnd={timeEnd}
-                minutesPerY={minutesPerY}
-                leftPercent={subColIdx / subCols.length}
-                widthPercent={
-                  expandWidth(ev, subColIdx, subCols) / subCols.length
-                }
-              ></EventItem>
-            );
+            const { start, end } = ev.time;
+            // Only return inbound events
+            if (
+              getTimeOfDay(start) > getTimeOfDay(timeStart) ||
+              getTimeOfDay(end) < getTimeOfDay(timeEnd)
+            )
+              return (
+                <EventItem
+                  key={ev.info.id}
+                  info={ev}
+                  timelineStart={timeStart}
+                  timelineEnd={timeEnd}
+                  minutesPerY={minutesPerY}
+                  leftPercent={subColIdx / subCols.length}
+                  widthPercent={
+                    expandWidth(ev, subColIdx, subCols) / subCols.length
+                  }
+                />
+              );
           })
         )
       )}
-    </>
+    </div>
   );
 }
 

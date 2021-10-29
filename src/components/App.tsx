@@ -11,45 +11,45 @@ const timetableDefaultConfig = {
   timeEnd: setOnly({ hour: 17 }),
   weekStartOnSunday: false,
   minutesPerCell: 60,
-  cellHeight: { value: 2, unit: "rem" },
+  cellHeight: { value: 3, unit: "rem" },
 };
+
+const mockCourses = [
+  {
+    info: { id: "1234", name: "c1", color: "blue" },
+    intervals: [
+      {
+        start: setOnly({ day: 1, hour: 8, min: 0 }),
+        end: setOnly({ day: 1, hour: 10 }),
+      },
+      {
+        start: setOnly({ day: 3, hour: 8 }),
+        end: setOnly({ day: 3, hour: 11 }),
+      },
+    ],
+  },
+  {
+    info: { id: "4567", name: "c2", color: "green" },
+    intervals: [
+      {
+        start: setOnly({ day: 1, hour: 9 }),
+        end: setOnly({ day: 1, hour: 11 }),
+      },
+      {
+        start: setOnly({ day: 2, hour: 9 }),
+        end: setOnly({ day: 2, hour: 10 }),
+      },
+      {
+        start: setOnly({ day: 2, hour: 1 }),
+        end: setOnly({ day: 2, hour: 2 }),
+      },
+    ],
+  },
+];
 
 function App() {
   const [courses, setCourses] = useState([]);
   const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
-
-  // setSelectedCourses([
-  //   {
-  //     info: { name: "c1", color: "blue" },
-  //     intervals: [
-  //       {
-  //         start: setOnly({ day: 1, hour: 8, min: 0 }),
-  //         end: setOnly({ day: 1, hour: 10 }),
-  //       },
-  //       {
-  //         start: setOnly({ day: 3, hour: 8 }),
-  //         end: setOnly({ day: 3, hour: 11 }),
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     info: { name: "c2", color: "green" },
-  //     intervals: [
-  //       {
-  //         start: setOnly({ day: 1, hour: 8, min: 30 }),
-  //         end: setOnly({ day: 1, hour: 10 }),
-  //       },
-  //       {
-  //         start: setOnly({ day: 2, hour: 9 }),
-  //         end: setOnly({ day: 2, hour: 10 }),
-  //       },
-  //       {
-  //         start: setOnly({ day: 2, hour: 1 }),
-  //         end: setOnly({ day: 2, hour: 2 }),
-  //       },
-  //     ],
-  //   },
-  // ]);
 
   return (
     <>
@@ -78,7 +78,8 @@ function App() {
           </a>
         </nav>
       </header>
-      <Timetable courses={selectedCourses} {...timetableDefaultConfig} />
+      {/* <Timetable courses={selectedCourses} {...timetableDefaultConfig} /> */}
+      <Timetable courses={mockCourses} {...timetableDefaultConfig} />
     </>
   );
 }

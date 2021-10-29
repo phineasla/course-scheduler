@@ -1,4 +1,4 @@
-import { set, setDay, differenceInMinutes, toDate } from "date-fns";
+import { set, setDay, differenceInMinutes, toDate, compareAsc } from "date-fns";
 import { Size } from "../types";
 
 const unixEpoch = { year: 1970, month: 0, date: 1 };
@@ -80,6 +80,27 @@ export function isWithinTimeInterval(time: Date | number, interval: Interval) {
     endTime.setDate(endTime.getDate() + 1);
   }
   return dirtyTime >= startTime && dirtyTime <= endTime;
+}
+
+/**
+ * Compare the two times (ignoring dates) and return 1 if the first date is after the second, 
+ * -1 if the first date is before the second or 0 if dates are equal.
+ * @see https://date-fns.org/v2.25.0/docs/compareAsc
+ */
+export function compareAscTime(
+  dateLeft: Date | number,
+  dateRight: Date | number
+) {
+  const left = toDate(dateLeft);
+  const right = toDate(dateRight);
+  return compareAsc(
+    dateLeft,
+    set(right, {
+      year: left.getFullYear(),
+      month: left.getMonth(),
+      date: left.getDate(),
+    })
+  );
 }
 
 export function sizeToString({ value, unit }: Size) {

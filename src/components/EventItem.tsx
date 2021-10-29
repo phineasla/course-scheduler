@@ -1,5 +1,11 @@
+import { useMemo } from "react";
 import styled from "styled-components";
 import { CourseEvent, Size } from "../types";
+import {
+  compareAscTime,
+  differenceInMinutesOfDay,
+  getTimeOfDay,
+} from "../utils/Utils";
 
 export default function EventItem({
   info,
@@ -19,7 +25,14 @@ export default function EventItem({
   console.log(info);
   console.log(leftPercent);
   console.log(widthPercent);
-  return <></>;
+  const { start, end } = info.time;
+
+  const top = useMemo(
+    () => differenceInMinutesOfDay(start, timelineStart) / minutesPerY,
+    [info.time]
+  );
+
+  return <div></div>;
 }
 
 // function timeIntervalToX(

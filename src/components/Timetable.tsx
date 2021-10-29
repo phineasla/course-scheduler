@@ -1,9 +1,11 @@
 import "../styles/Timetable.scss";
 import styled from "styled-components";
 import EventGrid from "./EventGrid";
-import { Course, Size } from "../types";
+import { Course, Size, TimetableState } from "../types";
 import { setOnly, sizeToString } from "../utils/Utils";
 import { format, eachMinuteOfInterval, roundToNearestMinutes } from "date-fns";
+import { TimetableStateContext } from "../contexts/TimetableContext";
+import { useMemo } from "react";
 
 /**
  * Use undefined for 1-hour precision,
@@ -71,62 +73,44 @@ export default function Timetable({
   // Move Sunday to the back
   if (!weekStartOnSunday) days.push(days.shift()!);
 
-  courses = [
-    {
-      info: { id: "1234", name: "c1", color: "blue" },
-      intervals: [
-        {
-          start: setOnly({ day: 1, hour: 8, min: 0 }),
-          end: setOnly({ day: 1, hour: 10 }),
-        },
-        {
-          start: setOnly({ day: 3, hour: 8 }),
-          end: setOnly({ day: 3, hour: 11 }),
-        },
-      ],
-    },
-    {
-      info: { id: "4567", name: "c2", color: "green" },
-      intervals: [
-        {
-          start: setOnly({ day: 1, hour: 9 }),
-          end: setOnly({ day: 1, hour: 11 }),
-        },
-        {
-          start: setOnly({ day: 2, hour: 9 }),
-          end: setOnly({ day: 2, hour: 10 }),
-        },
-        {
-          start: setOnly({ day: 2, hour: 1 }),
-          end: setOnly({ day: 2, hour: 2 }),
-        },
-      ],
-    },
-  ];
+  const timetableState = useMemo(
+    (): TimetableState => ({
+      timeStart: roundedStart,
+      timeEnd: roundedEnd,
+      weekStartOnSunday,
+      minutesPerCell,
+      cellHeight,
+      minutesPerVertUnit: minutesPerCell / cellHeight.value,
+      vertUnit: cellHeight.unit,
+    }),
+    [timeStart, timeEnd, weekStartOnSunday, minutesPerCell, cellHeight]
+  );
 
   return (
-    <TimetableWrapper
-      className="timetable"
-      maxHeight={sizeToString(totalHeight)}
-    >
-      <Header days={days} />
-      <Timeline timemarks={timemarks} height={totalHeight} />
-      <div className="timetable-body">
-        <Grid
-          rowCount={rowCount}
-          columnCount={columnCount}
-          height={totalHeight}
-        />
-        <EventGrid
-          courses={courses}
-          timeStart={timeStart}
-          timeEnd={timeEnd}
-          cellHeight={cellHeight}
-          minutesPerCell={minutesPerCell}
-          weekStartOnSunday={weekStartOnSunday}
-        />
-      </div>
-    </TimetableWrapper>
+    <TimetableStateContext.Provider value={timetableState}>
+      <TimetableWrapper
+        className="timetable"
+        maxHeight={sizeToString(totalHeight)}
+      >
+        <Header days={days} />
+        <Timeline timemarks={timemarks} height={totalHeight} />
+        <div className="timetable-body">
+          <Grid
+            rowCount={rowCount}
+            columnCount={columnCount}
+            height={totalHeight}
+          />
+          <EventGrid
+            courses={courses}
+            timeStart={timeStart}
+            timeEnd={timeEnd}
+            cellHeight={cellHeight}
+            minutesPerCell={minutesPerCell}
+            weekStartOnSunday={weekStartOnSunday}
+          />
+        </div>
+      </TimetableWrapper>
+    </TimetableStateContext.Provider>
   );
 }
 
