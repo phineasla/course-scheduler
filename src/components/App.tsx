@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { Course } from "../types";
-import { setOnly } from "../utils/Utils";
+import { setOnly } from "../utils/TimeUtils";
 
 const timetableDefaultConfig = {
   timeStart: setOnly({ hour: 7, min: 10 }),

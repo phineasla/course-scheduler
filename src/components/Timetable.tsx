@@ -1,14 +1,14 @@
+import { useMemo } from "react";
 import "../styles/Timetable.scss";
 import styled from "styled-components";
-import EventGrid from "./EventGrid";
-import { Course, Size, TimetableState } from "../types";
-import { setOnly, sizeToString } from "../utils/Utils";
+import DayColumn from "./DayColumn";
+import { Course, CourseEvent, Size, TimetableState } from "../types";
+import { mapCourseToDayOfWeek, sizeToString } from "../utils/TimetableUtils";
 import { format, eachMinuteOfInterval, roundToNearestMinutes } from "date-fns";
 import { TimetableStateContext } from "../contexts/TimetableContext";
-import { useMemo } from "react";
 
 /**
- * Use undefined for 1-hour precision,
+ * Use `undefined` for 1-hour precision,
  * @see https://date-fns.org/v2.25.0/docs/roundToNearestMinutes
  */
 const minutePrecision = {
@@ -58,28 +58,27 @@ export default function Timetable({
   cellHeight: Size;
 }) {
   const days = defaultDays;
+  const dayColumns = mapCourseToDayOfWeek(courses);
   const roundedStart = roundToNearestMinutes(timeStart, minutePrecision);
   const roundedEnd = roundToNearestMinutes(timeEnd, minutePrecision);
   const timemarks = eachMinuteOfInterval(
     { start: roundedStart, end: roundedEnd },
     { step: minutesPerCell }
   );
-  const rowCount = timemarks.length;
-  const columnCount = days.length;
   const totalHeight = {
-    value: cellHeight.value * rowCount,
+    value: cellHeight.value * timemarks.length,
     unit: cellHeight.unit,
   };
   // Move Sunday to the back
-  if (!weekStartOnSunday) days.push(days.shift()!);
+  if (!weekStartOnSunday) {
+    days.push(days.shift()!);
+    dayColumns.push(dayColumns.shift()!);
+  }
 
   const timetableState = useMemo(
     (): TimetableState => ({
       timeStart: roundedStart,
       timeEnd: roundedEnd,
-      weekStartOnSunday,
-      minutesPerCell,
-      cellHeight,
       minutesPerVertUnit: minutesPerCell / cellHeight.value,
       vertUnit: cellHeight.unit,
     }),
@@ -96,18 +95,11 @@ export default function Timetable({
         <Timeline timemarks={timemarks} height={totalHeight} />
         <div className="timetable-body">
           <Grid
-            rowCount={rowCount}
-            columnCount={columnCount}
+            rowCount={timemarks.length}
+            columnCount={days.length}
             height={totalHeight}
           />
-          <EventGrid
-            courses={courses}
-            timeStart={timeStart}
-            timeEnd={timeEnd}
-            cellHeight={cellHeight}
-            minutesPerCell={minutesPerCell}
-            weekStartOnSunday={weekStartOnSunday}
-          />
+          <EventGrid dayColumns={dayColumns} />
         </div>
       </TimetableWrapper>
     </TimetableStateContext.Provider>
@@ -155,5 +147,15 @@ function Grid({
     <Wrapper className="timetable-grid" height={sizeToString(height)}>
       {cols}
     </Wrapper>
+  );
+}
+
+function EventGrid({ dayColumns }: { dayColumns: CourseEvent[][] }) {
+  return (
+    <div className="event-grid">
+      {dayColumns.map((events, i) => (
+        <DayColumn key={i} events={events} />
+      ))}
+    </div>
   );
 }

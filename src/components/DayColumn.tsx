@@ -1,79 +1,18 @@
 import "../styles/EventGrid.scss";
-import styled from "styled-components";
 import EventItem from "./EventItem";
-import { Course, CourseEvent, Size } from "../types";
-import {
-  differenceInMinutesOfDay,
-  getTimeOfDay,
-  isWithinTimeInterval,
-} from "../utils/Utils";
-import { getDay, isSameDay, isBefore } from "date-fns";
-
-export default function EventGrid({
-  courses,
-  timeStart,
-  timeEnd,
-  cellHeight,
-  minutesPerCell,
-  weekStartOnSunday,
-}: {
-  courses: Course[];
-  timeStart: Date;
-  timeEnd: Date;
-  cellHeight: Size;
-  minutesPerCell: number;
-  weekStartOnSunday: boolean;
-}) {
-  // Minutes per vertical unit
-  const minutesPerY = minutesPerCell / cellHeight.value;
-  const dayColumns = mapCourseToDayOfWeek(courses);
-  // Move Sunday to the back
-  if (!weekStartOnSunday) {
-    dayColumns.push(dayColumns.shift()!);
-  }
-
-  // console.log(minutesPerCell);
-  // console.log(cellHeight);
-  // const t = events[1][0].interval;
-  // console.log(differenceInMinutes(t.end, t.start));
-  // const testEvent = intervalToBox(
-  //   events[1][0].time,
-  //   timeInterval,
-  //   minutesPerY,
-  //   cellHeight.unit
-  // );
-  // console.log(testEvent);
-
-  return (
-    <div className="event-grid">
-      {dayColumns.map((events, i) => (
-        <DayColumn
-          key={i}
-          events={events}
-          timeStart={timeStart}
-          timeEnd={timeEnd}
-          minutesPerY={minutesPerY}
-        />
-      ))}
-    </div>
-  );
-}
+import { CourseEvent } from "../types";
+import { getTimeOfDay } from "../utils/TimeUtils";
+import { expandWidth } from "../utils/TimetableUtils";
+import { useTimetableState } from "../contexts/TimetableContext";
+import { areIntervalsOverlapping } from "date-fns";
 
 /**
  * Each `DayColumn` represent a day of week (i.e. Monday, Tuesday, ...)
  * @see [Algorithm to layout events with maximum width](https://stackoverflow.com/q/11311410/12405558)
  */
-function DayColumn({
-  events,
-  timeStart,
-  timeEnd,
-  minutesPerY,
-}: {
-  events: CourseEvent[];
-  timeStart: Date;
-  timeEnd: Date;
-  minutesPerY: number;
-}) {
+export default function DayColumn({ events }: { events: CourseEvent[] }) {
+  const { timeStart, timeEnd } = useTimetableState();
+
   // Each group contains columns of events that overlap.
   const eventGroups: CourseEvent[][][] = [];
   // Each column contains events that do not overlap.
@@ -103,7 +42,7 @@ function DayColumn({
       // Try to place the event inside an existing column.
       let placed = false;
       subCols.some((col) => {
-        if (!isColliding(col[col.length - 1].time, ev.time)) {
+        if (!areIntervalsOverlapping(col[col.length - 1].time, ev.time)) {
           col.push(ev);
           placed = true;
         }
@@ -120,25 +59,22 @@ function DayColumn({
         lastEventEnding = ev.time.end;
     });
   eventGroups.push(subCols);
-  // console.log(eventGroups);
   return (
     <div>
       {eventGroups.map((subCols: CourseEvent[][]) =>
         subCols.map((subCol: CourseEvent[], subColIdx) =>
           subCol.map((ev: CourseEvent) => {
             const { start, end } = ev.time;
-            // Only return inbound events
             if (
-              getTimeOfDay(start) > getTimeOfDay(timeStart) ||
-              getTimeOfDay(end) < getTimeOfDay(timeEnd)
+              getTimeOfDay(end) <= getTimeOfDay(timeStart) ||
+              getTimeOfDay(start) >= getTimeOfDay(timeEnd)
             )
+              return null;
+            else
               return (
                 <EventItem
                   key={ev.info.id}
                   info={ev}
-                  timelineStart={timeStart}
-                  timelineEnd={timeEnd}
-                  minutesPerY={minutesPerY}
                   leftPercent={subColIdx / subCols.length}
                   widthPercent={
                     expandWidth(ev, subColIdx, subCols) / subCols.length
@@ -150,47 +86,6 @@ function DayColumn({
       )}
     </div>
   );
-}
-
-/**
- * Sort classes into days of the week, with Sunday is 0, Monday is 1...
- */
-function mapCourseToDayOfWeek(courses: Course[]) {
-  const events: CourseEvent[][] = [...Array(7)].map(() => []);
-  for (let course of courses) {
-    const { intervals, info } = course;
-    for (let intvl of intervals) {
-      const { start, end } = intvl;
-      if (!isSameDay(start, end) || !isBefore(start, end))
-        throw new RangeError("Invalid course interval");
-      events[getDay(start)].push({ time: intvl, info: info });
-    }
-  }
-  return events;
-}
-
-function isColliding(a: Interval, b: Interval) {
-  return a.start < b.end && a.end > b.start;
-}
-
-/**
- * Checks how many columns the event can expand into, without colliding with other events.
- * @param ev
- * @param iCol
- * @param columns
- * @returns
- */
-function expandWidth(ev: CourseEvent, iCol: number, columns: CourseEvent[][]) {
-  let colSpan = 1;
-  for (let i = iCol + 1; i < columns.length; i++) {
-    const col = columns[i];
-    for (let j = 0; j < col.length; j++) {
-      const ev1 = col[j];
-      if (isColliding(ev.time, ev1.time)) return colSpan;
-      colSpan++;
-    }
-  }
-  return colSpan;
 }
 
 // <div>

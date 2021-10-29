@@ -1,34 +1,31 @@
 import { useMemo } from "react";
 import styled from "styled-components";
-import { CourseEvent, Size } from "../types";
-import {
-  compareAscTime,
-  differenceInMinutesOfDay,
-  getTimeOfDay,
-} from "../utils/Utils";
+import { useTimetableState } from "../contexts/TimetableContext";
+import { CourseEvent } from "../types";
+import { differenceInMinutesOfDay } from "../utils/TimeUtils";
 
 export default function EventItem({
   info,
-  timelineStart,
-  timelineEnd,
-  minutesPerY,
   leftPercent,
   widthPercent,
 }: {
   info: CourseEvent;
-  timelineStart: Date;
-  timelineEnd: Date;
-  minutesPerY: number;
   leftPercent: number;
   widthPercent: number;
 }) {
   console.log(info);
   console.log(leftPercent);
   console.log(widthPercent);
+
+  const { timeStart, timeEnd, minutesPerVertUnit } = useTimetableState();
   const { start, end } = info.time;
 
   const top = useMemo(
-    () => differenceInMinutesOfDay(start, timelineStart) / minutesPerY,
+    () => differenceInMinutesOfDay(start, timeStart) / minutesPerVertUnit!,
+    [info.time]
+  );
+  const height = useMemo(
+    () => differenceInMinutesOfDay(end, start) / minutesPerVertUnit!,
     [info.time]
   );
 

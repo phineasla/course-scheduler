@@ -1,5 +1,4 @@
 import { set, setDay, differenceInMinutes, toDate, compareAsc } from "date-fns";
-import { Size } from "../types";
 
 const unixEpoch = { year: 1970, month: 0, date: 1 };
 
@@ -103,6 +102,3 @@ export function compareAscTime(
   );
 }
 
-export function sizeToString({ value, unit }: Size) {
-  return `${value}${unit}`;
-}

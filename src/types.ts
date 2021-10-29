@@ -16,9 +16,6 @@ export type CourseEvent = {
 export type TimetableState = {
   timeStart: Date;
   timeEnd: Date;
-  weekStartOnSunday: boolean;
-  minutesPerCell: number;
-  cellHeight: Size;
-  minutesPerVertUnit?: number;
-  vertUnit?: string;
+  minutesPerVertUnit: number;
+  vertUnit: string;
 };

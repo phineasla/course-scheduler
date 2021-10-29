@@ -1,14 +1,9 @@
 import { createContext, useContext } from "react";
 import { TimetableState } from "../types";
-import { setOnly } from "../utils/Utils";
+import { setOnly } from "../utils/TimeUtils";
 
-export const TimetableStateContext = createContext<TimetableState>({
-  timeStart: setOnly({ hour: 7, min: 10 }),
-  timeEnd: setOnly({ hour: 17 }),
-  weekStartOnSunday: false,
-  minutesPerCell: 60,
-  cellHeight: { value: 3, unit: "rem" },
-});
+export const TimetableStateContext = createContext<TimetableState | null>(null);
 
+// If this is null, then you forgot to set value for `TimetableStateContext.Provider`
 export const useTimetableState = (): TimetableState =>
-  useContext(TimetableStateContext);
+  useContext(TimetableStateContext)!;
