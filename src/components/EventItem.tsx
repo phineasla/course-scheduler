@@ -13,21 +13,23 @@ export default function EventItem({
   leftPercent: number;
   widthPercent: number;
 }) {
-  console.log(info);
-  console.log(leftPercent);
-  console.log(widthPercent);
-
-  const { timeStart, timeEnd, minutesPerVertUnit } = useTimetableState();
+  const { timeStart, minutesPerVertUnit, vertUnit } =
+    useTimetableState();
   const { start, end } = info.time;
 
   const top = useMemo(
     () => differenceInMinutesOfDay(start, timeStart) / minutesPerVertUnit!,
-    [info.time]
+    [start, timeStart, minutesPerVertUnit]
   );
   const height = useMemo(
     () => differenceInMinutesOfDay(end, start) / minutesPerVertUnit!,
-    [info.time]
+    [end, start, minutesPerVertUnit]
   );
+
+  console.log(info);
+  console.log(leftPercent);
+  console.log(widthPercent);
+  console.log(top, height);
 
   return <div></div>;
 }

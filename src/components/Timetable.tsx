@@ -82,7 +82,7 @@ export default function Timetable({
       minutesPerVertUnit: minutesPerCell / cellHeight.value,
       vertUnit: cellHeight.unit,
     }),
-    [timeStart, timeEnd, weekStartOnSunday, minutesPerCell, cellHeight]
+    [roundedStart, roundedEnd, minutesPerCell, cellHeight]
   );
 
   return (
