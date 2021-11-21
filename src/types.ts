@@ -19,3 +19,9 @@ export type TimetableState = {
   minutesPerVertUnit: number;
   vertUnit: string;
 };
+export type Box = {
+  top: string | number;
+  height: string | number;
+  left: string | number;
+  width: string | number;
+};

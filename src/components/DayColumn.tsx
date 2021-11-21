@@ -1,4 +1,3 @@
-import "../styles/EventGrid.scss";
 import EventItem from "./EventItem";
 import { CourseEvent } from "../types";
 import { getTimeOfDay } from "../utils/TimeUtils";

@@ -1,8 +1,16 @@
 import { useMemo } from "react";
+import "../styles/EventItem.scss";
 import styled from "styled-components";
 import { useTimetableState } from "../contexts/TimetableContext";
-import { CourseEvent } from "../types";
+import { Box, CourseEvent } from "../types";
 import { differenceInMinutesOfDay } from "../utils/TimeUtils";
+
+const EventItemWrapper = styled.div<Box>`
+  top: ${(p) => p.top};
+  height: ${(p) => p.height};
+  left: ${(p) => p.left};
+  width: ${(p) => p.width};
+`;
 
 export default function EventItem({
   info,
@@ -13,25 +21,41 @@ export default function EventItem({
   leftPercent: number;
   widthPercent: number;
 }) {
-  const { timeStart, minutesPerVertUnit, vertUnit } =
-    useTimetableState();
+  const { timeStart, minutesPerVertUnit, vertUnit } = useTimetableState();
   const { start, end } = info.time;
 
-  const top = useMemo(
-    () => differenceInMinutesOfDay(start, timeStart) / minutesPerVertUnit!,
-    [start, timeStart, minutesPerVertUnit]
-  );
-  const height = useMemo(
-    () => differenceInMinutesOfDay(end, start) / minutesPerVertUnit!,
-    [end, start, minutesPerVertUnit]
-  );
+  // Don't know if this is "heavy" enough to useMemo
+  const box = useMemo((): Box => {
+    const withVertUnit = (value: number): string => `${value}${vertUnit}`;
+    return {
+      top: withVertUnit(
+        differenceInMinutesOfDay(start, timeStart) / minutesPerVertUnit
+      ),
+      height: withVertUnit(
+        differenceInMinutesOfDay(end, start) / minutesPerVertUnit
+      ),
+      left: leftPercent === 0 ? "-1px" : `calc(${leftPercent * 100}% + 1px)`,
+      width:
+        widthPercent === 0
+          ? `calc(${widthPercent * 100}% + 1px)`
+          : `calc(${widthPercent * 100}% - 1px)`,
+    };
+  }, [
+    start,
+    end,
+    timeStart,
+    minutesPerVertUnit,
+    vertUnit,
+    leftPercent,
+    widthPercent,
+  ]);
 
   console.log(info);
   console.log(leftPercent);
   console.log(widthPercent);
-  console.log(top, height);
+  console.log(box);
 
-  return <div></div>;
+  return <EventItemWrapper className="event-item" {...box}></EventItemWrapper>;
 }
 
 // function timeIntervalToX(

@@ -86,3 +86,17 @@
     justify-content: center;
   }
 }
+
+.event-grid {
+  // Overlap timetable-grid
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  > div {
+    flex: 1;
+    position: relative;
+    // border: solid black;
+  }
+}
